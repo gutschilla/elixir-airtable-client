@@ -5,9 +5,11 @@
 - replicate API features with basic REST features:
   * [x] list
   * [ ] create
-  * [ ] retrieve
+  * [x] retrieve
   * [ ] update
   * [ ] delete
+- [ ] add filters/queries to list()
+- [ ] retrieve all results for a larger set - iterate over offsets, respecting the rate limit of 5/s
 - act as caching proxies to overcome rate limiting
   * in-memory only first
 - change notofications
@@ -30,21 +32,26 @@ by adding `airtable` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:airtable, "~> 0.1.0"}
+    {:airtable, "~> 0.2.0"}
   ]
 end
 ```
 # Usage
 
 ```elixir
-{:ok, result} = Airtable.list("<API_KEY>", "<table_key>", "<table_name>")
+iex> {:ok, result} = Airtable.list("<API_KEY>", "<table_key>", "<table_name>")
 %Airtable.Result.List{
   records: [
-    %Airtable.Result.Item{
-      id: "<SOMEID>",
-      fields: %{…}
-    }
+    %Airtable.Result.Item{id: "idfoobar",  fields: %{"foo" => 1}},
+    %Airtable.Result.Item{id: "idboombaz", fields: %{"foo" => 2}},
+    …
   ]
+}
+
+iex> {:ok, result} = Airtable.get("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", "<ITEM_ID>")
+%Airtable.Result.Item{
+  id: "<ITEM_ID>",
+  fields: %{…}
 }
 ```
 

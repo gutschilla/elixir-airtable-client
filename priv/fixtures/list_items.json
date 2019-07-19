@@ -1,0 +1,83 @@
+{
+    "records": [
+        {
+            "id": "recetsee5JTHKkgYW",
+            "fields": {
+                "Summe Verleihmarketing": 0
+            },
+            "createdTime": "2019-07-15T15:04:35.000Z"
+        },
+        {
+            "id": "recX0tb2DJg4IMnKk",
+            "fields": {
+                "Titel": "Aladdin",
+                "Teaser": "Der Disney-Klassiker aus 1001 Nacht kehrt als opulente Realverfilmung mit Will Smith als Dschini zurück.",
+                "Plakat": [
+                    {
+                        "id": "attaa2JIMaKNFQ47f",
+                        "url": "https://dl.airtable.com/.attachments/baa57adfee97be3c2f481695d93a6971/6ea1ad6d/Aladdin_Poster_Web.jpg",
+                        "filename": "Aladdin_Poster_Web.jpg",
+                        "size": 1000578,
+                        "type": "image/jpeg",
+                        "thumbnails": {
+                            "small": {
+                                "url": "https://dl.airtable.com/.attachmentThumbnails/532aa6e18a876ed2647b3138b477e3e4/3b6b2553",
+                                "width": 24,
+                                "height": 36
+                            },
+                            "large": {
+                                "url": "https://dl.airtable.com/.attachmentThumbnails/fee17250988f6e5d1f8df339826fa609/abdad5a0",
+                                "width": 512,
+                                "height": 768
+                            },
+                            "full": {
+                                "url": "https://dl.airtable.com/.attachmentThumbnails/124cca87a7bf5e49df9c20fb98cbfc0d/f5b2e5e9",
+                                "width": 3000,
+                                "height": 3000
+                            }
+                        }
+                    }
+                ],
+                "Kinostart": "2019-05-23",
+                "Kurztext": "Wie soll ein einfacher Straßendieb wie Aladdin nur Prinzessin Jasmin beeindrucken? Als er von einer legendären Wunderlampe erfährt, sieht Aladdin sein...",
+                "Verleih": "Disney",
+                "Langtext": "Aladdin (Mena Massoud) schlägt sich zusammen mit seinem treuen Affen Abu als kleiner Gelegenheitsdieb in den Straßen von Agrabah durch. Als er durch Z...",
+                "YouTube DE": "https://www.youtube.com/watch?v=mQ8vWGe5K1M",
+                "Land": [
+                    "USA"
+                ],
+                "Jahr": "2019",
+                "Start": "regulär",
+                "Einschätzung": 2,
+                "Originaltitel": "Aladdin",
+                "Genres": [
+                    "Kinder"
+                ],
+                "Darsteller": [
+                    "Will Smith",
+                    "Mena Massoud",
+                    "Naomi Scott"
+                ],
+                "Länge in min": 128,
+                "FSK": "6",
+                "Regie": [
+                    "Guy Ritchie"
+                ],
+                "Online?": true,
+                "Letzte Änderung": "2019-06-06T13:55:34.000Z",
+                "Summe Verleihmarketing": 0
+            },
+            "createdTime": "2019-05-17T14:33:22.000Z"
+        },
+        {
+            "id": "recFbM4WJiZqSVX36",
+            "fields": {
+                "Titel": "Asphalt",
+                "Letzte Änderung": "2019-07-15T15:03:56.000Z",
+                "Summe Verleihmarketing": 0
+            },
+            "createdTime": "2019-07-15T15:03:47.000Z"
+        }
+    ],
+    "offset": "recFbM4WJiZqSVX36"
+}
