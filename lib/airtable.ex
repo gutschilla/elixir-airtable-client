@@ -37,9 +37,33 @@ defmodule Airtable do
   @doc """
   Retrieves all entries.
 
-  ## Options
+  ## options
 
-  - fields
+  ### fields:
+
+  list of strings for fields to retrieve only. Remember, that id will always be there.
+
+  ```
+  Airtable.list("API_KEY", "app_BASE", "Filme", fields: ["Titel", "Jahr"])
+  {:ok,
+    %Airtable.Result.List{
+      offset: nil,
+      records: [
+        %Airtable.Result.Item{
+          fields: %{"Jahr" => "2004", "Titel" => "Kill Bill Volume 2"},
+          id: "rec15b3sYhdEStY1e"
+        },
+        %Airtable.Result.Item{
+          fields: %{"Titel" => "Ein blonder Traum"},
+          id: "rec3KUcL7R3AHD3rY"
+        },
+        ...
+      ]
+    }
+  }
+  ```
+
+
   - filterByFormula
   - maxRecords
   - maxRecords
@@ -55,8 +79,8 @@ defmodule Airtable do
       %Airtable.Result.List%{records: [%Airtable.Result.Item{id: "someid", fields: %{"foo": "bar"}}], offset: "…"}
 
   """
-  def list(api_key, table_key, table_name) do
-    request = make_request(:list, api_key, table_key, table_name)
+  def list(api_key, table_key, table_name, options \\ []) do
+    request = make_request(:list, api_key, table_key, table_name, options)
     with {:ok, response = %Mojito.Response{}} <- Mojito.request(request) do
       handle_response(:list, response)
     end
@@ -88,12 +112,22 @@ defmodule Airtable do
     }
   end
 
-  def make_request(:list, api_key, table_key, table_name) do
+  def make_request(:list, api_key, table_key, table_name, options) do
+    query = URI.encode_query(query_for_fields(options[:fields]))
+    url =
+      make_url(:list, table_key, table_name)
+      |> URI.parse()
+      |> Map.put(:query, query)
+      |> URI.to_string()
     %Mojito.Request{
       headers: make_headers(api_key),
       method: :get,
-      url:    make_url(:list, table_key, table_name)
+      url: url
     }
+  end
+
+  def query_for_fields(field_list) when is_list(field_list) do
+    field_list |> Enum.map(fn value -> {"fields[]", value} end)
   end
 
   def make_headers(api_key) when is_binary(api_key) do

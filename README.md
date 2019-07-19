@@ -8,7 +8,7 @@
   * [x] retrieve
   * [ ] update
   * [ ] delete
-- [ ] add filters/queries to list()
+- [x] add filters/queries to list()
 - [ ] retrieve all results for a larger set - iterate over offsets, respecting the rate limit of 5/s
 - act as caching proxies to overcome rate limiting
   * in-memory only first
@@ -32,7 +32,7 @@ by adding `airtable` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:airtable, "~> 0.2.0"}
+    {:airtable, "~> 0.2.1"}
   ]
 end
 ```
@@ -52,6 +52,28 @@ iex> {:ok, result} = Airtable.get("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", "<
 %Airtable.Result.Item{
   id: "<ITEM_ID>",
   fields: %{…}
+}
+```
+
+retrieve certain fields only
+
+```elixir
+iex> Airtable.list("API_KEY", "app_BASE", "Filme", fields: ["title", "year"])
+{:ok,
+  %Airtable.Result.List{
+    offset: nil,
+    records: [
+      %Airtable.Result.Item{
+        fields: %{"year" => "2004", "title" => "Kill Bill Volume 2"},
+        id: "recbummibaer12xx"
+      },
+      %Airtable.Result.Item{
+        fields: %{"titke" => "A blonde dream"}, # <-- null and empty "" values will be removed by Airtable itself!
+        id: "recfoobarbazbumm"
+      },
+      ...
+    ]
+  }
 }
 ```
 
