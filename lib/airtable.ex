@@ -129,6 +129,9 @@ defmodule Airtable do
   def query_for_fields(field_list) when is_list(field_list) do
     field_list |> Enum.map(fn value -> {"fields[]", value} end)
   end
+  def query_for_fields(nil) do
+    []
+  end
 
   def make_headers(api_key) when is_binary(api_key) do
     [{"Authorization", "Bearer #{api_key}"}]
