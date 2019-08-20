@@ -23,6 +23,23 @@ defmodule Airtable.MixProject do
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_),     do: ["lib"]
 
+  def description do
+    """
+    An API wrapper for Airtable's REST API to base your specific client on.
+    """
+  end
+
+  defp package do
+    [
+      files: ["lib", "mix.exs", "README.md", "LICENSE", "test"],
+      maintainers: ["Martin Dobberstein (Gutsch)"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/gutschilla/elixir_airtable_client"
+      }
+    ]
+  end
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [

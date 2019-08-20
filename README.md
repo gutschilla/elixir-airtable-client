@@ -8,7 +8,7 @@
   * [x] retrieve
   * [ ] update
   * [ ] delete
-- [x] add filters/queries to list()
+- [ ] add filters/queries to list()
 - [ ] retrieve all results for a larger set - iterate over offsets, respecting the rate limit of 5/s
 - act as caching proxies to overcome rate limiting
   * in-memory only first
@@ -22,7 +22,27 @@
 Base your own API wrapper by calling this application with specific API keys,
 table keys and stuff and also convert `Airtable.Result.Item` structs into
 whatever is your best matching thing. Usually you'd want to parse `fields`
-contents if said items further.
+contents if said items further:
+
+```elixir
+defmodule MyApp.Airtable.Film do
+
+  defstruct title: nil, rental_id: nil, pegi: nil, teaser: nil
+
+  def from_airtable_item(%Airtable.Result.Item{id: id, fields: map}) do
+    struct(Film, map) # this will probably more complex in reality
+  end
+
+  def list do
+    api_key   = Application.get_env(:airtable, :api_key)
+    film_base = Application.get_env(:airtable, :film_base)
+    with {:ok, %Airtable.Result.Likst{records: records}} <- Airtable.list(api_key, film_base, "films") do
+      Enum.map(records, &from_airtable_item/1)
+    end
+  end
+    
+end
+```
 
 ## Installation
 
