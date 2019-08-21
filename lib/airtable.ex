@@ -86,6 +86,23 @@ defmodule Airtable do
     end
   end
 
+  def create(api_key, table_key, table_name, options \\ []) do
+    with request = %Mojito.Request{} <- make_request(:create, api_key, table_key, table_name, options),
+         {:ok, response}             <- Mojito.request(request |> IO.inspect()) do
+      handle_response(:create, response)
+    end
+  end
+
+  def handle_response(:create, response) do
+    with {:status, %Mojito.Response{body: body, status_code: 201}} <- {:status, response},
+         {:json, {:ok, map = %{}}}                                 <- {:json,   Jason.decode(body)},
+         {:struct, {:ok, item}}                                    <- {:struct, make_struct(:get, map)} do
+      {:ok, item}
+    else
+      {reason, details} -> {:error, {reason, details}}
+    end
+  end
+
   def handle_response(type, response) when type in [:get, :list] do
     with {:status, %Mojito.Response{body: body, status_code: 200}} <- {:status, response},
          {:json, {:ok, map = %{}}}                                 <- {:json,   Jason.decode(body)},
@@ -124,6 +141,23 @@ defmodule Airtable do
       method: :get,
       url: url
     }
+  end
+
+  def make_request(:create, api_key, table_key, table_name, options) do
+    # https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/SIPI_Jelly_Beans_4.1.07.tiff/lossy-page1-256px-SIPI_Jelly_Beans_4.1.07.tiff.jpg
+    url = make_url(:list, table_key, table_name)
+    with {:fields, fields} when is_map(fields) or is_nil(fields) <- {:fields, options[:fields]},
+         {:ok, json} <- Jason.encode(%{"fields" => fields || %{}}) do
+      %Mojito.Request{
+        headers: make_headers(api_key),
+        method: :post,
+        url: url,
+        body: json |> IO.inspect()
+      }
+    else
+      {:fields, error} -> {:error, {:fields, :not_map_nor_nil}}
+      any -> any
+    end
   end
 
   def query_for_fields(field_list) when is_list(field_list) do

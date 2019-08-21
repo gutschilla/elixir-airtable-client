@@ -10,10 +10,16 @@
   * [ ] delete
 - [ ] add filters/queries to list()
 - [ ] retrieve all results for a larger set - iterate over offsets, respecting the rate limit of 5/s
+
+## Out-of scope
+
 - act as caching proxies to overcome rate limiting
   * in-memory only first
 - change notofications
   * plain callbacks via {module, function, args} tuples
+  
+These things will be done in a different project as this module with concentrate
+on the basic REST features themselves.
 
 [![buddy pipeline](https://app.buddy.works/zwoelf/elixir-airtable-client/pipelines/pipeline/199738/badge.svg?token=fb70ba265872a7640649f628ae57a3dae87c2cb21b49f078558379a232e50968 "buddy pipeline")](https://app.buddy.works/zwoelf/elixir-airtable-client/pipelines/pipeline/199738)
 
