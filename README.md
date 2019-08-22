@@ -7,8 +7,8 @@
   * [x] create
   * [x] retrieve
   * [ ] update
-  * [ ] delete
-- [½] add filters/queries to list()
+  * [x] delete
+- [ ] add filters/queries to list()
 - [ ] retrieve all results for a larger set - iterate over offsets, respecting the rate limit of 5/s
 
 ## Out-of scope
