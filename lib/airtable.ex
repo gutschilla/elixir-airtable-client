@@ -19,7 +19,7 @@ defmodule Airtable do
   downloadable URLs.
 
   Airtable.create(
-    "AIRTABLE_API_KEY", "TABLE_KEY", "people",
+    "AIRTABLE_API_KEY", "TABLE_KEY", "persons",
     fields: %{
       "Name"        => "Martin Gutsch",
       "Notes"       => "formerly knows as gutschilla",
@@ -28,6 +28,29 @@ defmodule Airtable do
   )
   """
   def create(api_key, table_key, table_name, options), do: perform(:create, api_key, table_key, table_name, nil, options)
+
+  @doc ~S"""
+  Replaces an existing row with a new one. If you just want to update certain
+  fields, use update/5 instead. Returns the replaces item.
+
+  # create
+  {:ok, %Airtable.Result.Item{id: id , fields: %{"name": "Frank", age: 55}} = Airtable.create("API_KEY", "TABLE_KEY", "persons", "rec_SOME_ID", fields: %{"name": "Frank", age: 55})
+  # overwrite
+  {:ok, %Airtable.Result.Item{id: ^id, fields: %{"name": "Martin", age: 39}} = Airtable.replace("API_KEY", "TABLE_KEY", "persons", id, fields: %{"name": "Martin", age: 39})
+  """
+  def replace(api_key, table_key, table_name, id, options), do: perform(:replace, api_key, table_key, table_name, id, options)
+
+  @doc ~S"""
+  Update given fields for a row. Fields not set in this call will be kapt as-is.
+  If you want to replace the whole entry/row, use replace/5 instead. Returns the
+  updated item.
+
+  # create
+  {:ok, %Airtable.Result.Item{id: id , fields: %{"name": "Frank", age: 55}} = Airtable.create("API_KEY", "TABLE_KEY", "persons", "rec_SOME_ID", fields: %{"name": "Frank", age: 55})
+  # overwrite, age is still 55
+  {:ok, %Airtable.Result.Item{id: ^id, fields: %{"name": "Martin", age: 55}} = Airtable.replace("API_KEY", "TABLE_KEY", "persons", id, fields: %{"name": "Martin"})
+  """
+  def update(api_key, table_key, table_name, id, options), do: perform(:update, api_key, table_key, table_name, id, options)
 
   @doc """
   Perfoms the call cycle for :get, :delete, :update, :replace calls.
@@ -106,7 +129,7 @@ defmodule Airtable do
     end
   end
 
-  def handle_response(type, response) when type in [:get, :list, :create] do
+  def handle_response(type, response) when type in [:get, :list, :create, :update, :replace] do
     with {:status, %Mojito.Response{body: body, status_code: 200}} <- {:status, response},
          {:json, {:ok, map = %{}}}                                 <- {:json,   Jason.decode(body)},
          {:struct, {:ok, item}}                                    <- {:struct, make_struct(type, map)} do
@@ -117,7 +140,7 @@ defmodule Airtable do
     end
   end
 
-  defp make_struct(type, map) when type in [:get, :create] do
+  defp make_struct(type, map) when type in [:get, :create, :update, :replace] do
     with item = %Airtable.Result.Item{} <- Airtable.Result.Item.from_item_map(map), do: {:ok, item}
   end
 

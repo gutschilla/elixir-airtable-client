@@ -6,7 +6,8 @@
   * [x] list
   * [x] create
   * [x] retrieve
-  * [ ] update
+  * [x] update
+  * [x] replace
   * [x] delete
 - [ ] add filters/queries to list()
 - [ ] retrieve all results for a larger set - iterate over offsets, respecting the rate limit of 5/s
@@ -64,24 +65,30 @@ end
 ```
 # Usage
 
+## create
 ```elixir
-iex> {:ok, result} = Airtable.list("<API_KEY>", "<table_key>", "<table_name>")
-%Airtable.Result.List{
-  records: [
-    %Airtable.Result.Item{id: "idfoobar",  fields: %{"foo" => 1}},
-    %Airtable.Result.Item{id: "idboombaz", fields: %{"foo" => 2}},
-    …
-  ]
-}
+{:ok, %Airtable.Result.Item{id: id1, fields: %{"foo" => 1, "bar" => 2}}} = Airtable.create("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", fields: %{"foo" => 1, "bar" => 2})
+{:ok, %Airtable.Result.Item{id: id2, fields: %{"foo" => 3, "bar" => 4}}} = Airtable.create("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", fields: %{"foo" => 3, "bar" => 4})
+```
 
-iex> {:ok, result} = Airtable.get("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", "<ITEM_ID>")
-%Airtable.Result.Item{
-  id: "<ITEM_ID>",
-  fields: %{…}
+## list
+```elixir
+{:ok, result} = Airtable.list("<API_KEY>", "<table_key>", "<table_name>")
+```
+yields
+
+```elixir
+{:ok ,
+  %Airtable.Result.List{
+    records: [
+      %Airtable.Result.Item{id: ^id1, fields: %{"foo" => 1, "bar" => 2}},
+      %Airtable.Result.Item{id: ^id2, fields: %{"foo" => 3, "bar" => 4}},
+    ]
+  }
 }
 ```
 
-retrieve certain fields only
+## list certain fields only
 
 ```elixir
 iex> Airtable.list("API_KEY", "app_BASE", "Filme", fields: ["title", "year"])
@@ -103,9 +110,49 @@ iex> Airtable.list("API_KEY", "app_BASE", "Filme", fields: ["title", "year"])
 }
 ```
 
+## get (retrieve)
+
+```elixir
+{:ok, get_result} = Airtable.get("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", id1)
+```
+yields:
+```elixir
+{:ok, %Airtable.Result.Item{id: id1, fields: %{"foor" => 1, "bar" => 2}}}
+```
+
+
+## replace
+
+This will overwrite all fields in the existing row. Keys not goven in `fields`
+map will be nil-ified.
+
+```elixir
+{:ok, get_result} = Airtable.replace("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", id1, fields: %{"foo" => 5, "bar" => 6})
+```
+yields:
+```elixir
+{:ok, %Airtable.Result.Item{id: id1, fields: %{"foor" => 5, "bar" => 6}}}
+```
+## update
+
+This will update only those fields present in the argument `fields` map. Alle
+others will be kept.
+
+```elixir
+{:ok, get_result} = Airtable.update("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", id1, fields: %{"foo" => 7})
+```
+yields:
+```elixir
+{:ok, %Airtable.Result.Item{id: id1, fields: %{"foor" => 7, "bar" => 6}}}
+```
+
+## delete
+
+```elixir
+{:ok, id1} = Airtable.delete("<API_KEY>", "<TABLE_KEY>", "<TABLE_NAME>", id1)
+```
+
 # Documentation
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/airtable](https://hexdocs.pm/airtable).
-
+A full description of all available calls is on HexDocs:
+[https://hexdocs.pm/airtable](https://hexdocs.pm/airtable)
