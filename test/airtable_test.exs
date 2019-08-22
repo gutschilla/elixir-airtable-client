@@ -1,10 +1,18 @@
 defmodule AirtableTest do
   use ExUnit.Case
-  # doctest Airtable
+
+  doctest Airtable.Result.List
 
   test "get item" do
     {:ok, result} = AirtableTest.Fixtures.get_response()
     {:ok, %Airtable.Result.Item{fields: map, id: id}} = Airtable.handle_response(:get, result)
+    assert is_binary(id)
+    assert is_map(map)
+  end
+
+  test "create item" do
+    {:ok, result} = AirtableTest.Fixtures.create_response()
+    {:ok, %Airtable.Result.Item{fields: map, id: id}} = Airtable.handle_response(:create, result)
     assert is_binary(id)
     assert is_map(map)
   end

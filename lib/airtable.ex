@@ -3,30 +3,9 @@ defmodule Airtable do
   Documentation for Airtable.
   """
 
-  defmodule Result.Item do
-    defstruct [id: nil, fields: %{}]
-    def from_item_map(%{"id" => id, "fields" => fields}) when is_binary(id) and is_map(fields) do
-      %__MODULE__{id: id, fields: fields}
-    end
-    def from_item_map(map) do
-      raise "malformed item. must be map with string \"id\" and \"fields\" as map: #{inspect(map)}"
-    end
-  end
-
-  defmodule Result.List do
-    defstruct [records: [], offset: nil]
-    def from_record_maps(map = %{"records" => records}) when is_list(records) do
-      offset = map["offset"] # key "offset" may not exist
-      %__MODULE__{
-        records: Enum.map(records, &Airtable.Result.Item.from_item_map/1),
-        offset:  offset
-      }
-    end
-    def from_record_maps(map) do
-      raise "malformed list response map: must be map with key \"records\" containing a list of item maps: #{inspect(map)}"
-    end
-  end
-
+  @doc """
+  Retrieves a certain row from a table.
+  """
   def get(api_key, table_key, table_name, item_id) do
     request = make_request(:get, api_key, table_key, table_name, item_id)
     with {:ok, response = %Mojito.Response{}} <- Mojito.request(request) do
@@ -86,7 +65,30 @@ defmodule Airtable do
     end
   end
 
-  def handle_response(type, response) when type in [:get, :list] do
+  @doc """
+  Creates a new row by performing a POST request to Airtable. Parameters are
+  sent via the _fields_ option. Upload fields just need to be given one or more
+  downloadable URLs.
+
+  Airtable.create(
+    "AIRTABLE_API_KEY",
+    "TABLE_KEY",
+    "people",
+    fields: %{
+      "Name"        => "Martin Gutsch",
+      "Notes"       => "formerly knows as gutschilla",
+      "Attachments" => [%{"url" => "https://dummyimage.com/600x400/000/fff"}]
+     }
+   )
+  """
+  def create(api_key, table_key, table_name, options \\ []) do
+    with request = %Mojito.Request{} <- make_request(:create, api_key, table_key, table_name, options),
+         {:ok, response}             <- Mojito.request(request |> IO.inspect()) do
+      handle_response(:create, response)
+    end
+  end
+
+  def handle_response(type, response) when type in [:get, :list, :create] do
     with {:status, %Mojito.Response{body: body, status_code: 200}} <- {:status, response},
          {:json, {:ok, map = %{}}}                                 <- {:json,   Jason.decode(body)},
          {:struct, {:ok, item}}                                    <- {:struct, make_struct(type, map)} do
@@ -96,11 +98,11 @@ defmodule Airtable do
     end
   end
 
-  def make_struct(:get, map) do
+  defp make_struct(type, map) when type in [:get, :create] do
     with item = %Airtable.Result.Item{} <- Airtable.Result.Item.from_item_map(map), do: {:ok, item}
   end
 
-  def make_struct(:list, map) do
+  defp make_struct(:list, map) do
     with list = %Airtable.Result.List{} <- Airtable.Result.List.from_record_maps(map), do: {:ok, list}
   end
 
@@ -126,22 +128,43 @@ defmodule Airtable do
     }
   end
 
-  def query_for_fields(field_list) when is_list(field_list) do
+  def make_request(:create, api_key, table_key, table_name, options) do
+    # https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/SIPI_Jelly_Beans_4.1.07.tiff/lossy-page1-256px-SIPI_Jelly_Beans_4.1.07.tiff.jpg
+    url = make_url(:list, table_key, table_name)
+    with {:fields, fields} when is_map(fields) or is_nil(fields) <- {:fields, options[:fields]},
+         {:ok, json} <- Jason.encode(%{"fields" => fields || %{}}) do
+      %Mojito.Request{
+        headers: make_headers(api_key),
+        method: :post,
+        url: url,
+        body: json |> IO.inspect()
+      }
+    else
+      {:fields, error} -> {:error, {:fields, error}}
+      any -> any
+    end
+  end
+
+  defp query_for_fields(field_list) when is_list(field_list) do
     field_list |> Enum.map(fn value -> {"fields[]", value} end)
   end
-  def query_for_fields(nil) do
+
+  defp query_for_fields(nil) do
     []
   end
 
-  def make_headers(api_key) when is_binary(api_key) do
-    [{"Authorization", "Bearer #{api_key}"}]
+  defp make_headers(api_key) when is_binary(api_key) do
+    [
+      {"Authorization", "Bearer #{api_key}"},
+      {"Content-Type", "application/json"},
+    ]
   end
 
-  def make_url(:get, table_key, table_name, item_id) do
+  defp make_url(:get, table_key, table_name, item_id) do
     [base_url(), table_key, table_name, item_id] |> Enum.join("/")
   end
 
-  def make_url(:list, table_key, table_name) do
+  defp make_url(:list, table_key, table_name) do
     [base_url(), table_key, table_name] |> Enum.join("/")
   end
 
