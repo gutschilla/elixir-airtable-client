@@ -4,11 +4,11 @@
 
 - replicate API features with basic REST features:
   * [x] list
-  * [ ] create
+  * [x] create
   * [x] retrieve
   * [ ] update
   * [ ] delete
-- [ ] add filters/queries to list()
+- [½] add filters/queries to list()
 - [ ] retrieve all results for a larger set - iterate over offsets, respecting the rate limit of 5/s
 
 ## Out-of scope
