@@ -24,6 +24,12 @@ defmodule AirtableTest do
     assert records |> hd() |> Map.get(:__struct__) == Airtable.Result.Item
   end
 
+  test "delete item" do
+    {:ok, result} = AirtableTest.Fixtures.delete_response()
+    {:ok, id} = Airtable.handle_response(:delete, result)
+    assert is_binary(id)
+  end
+
   test "query format for fields" do
     request = Airtable.make_request(:list, "API_KEY", "base", "table", fields: ["Titel", "Teaser"])
     assert request.url |> URI.parse() |> Map.get(:query) == "fields%5B%5D=Titel&fields%5B%5D=Teaser"
