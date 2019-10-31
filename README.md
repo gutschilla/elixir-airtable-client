@@ -11,7 +11,7 @@
   * [x] update
   * [x] replace
   * [x] delete
-- [ ] add filters/queries to list()
+- [ ] WIP: add filters/queries to list()
 - [ ] retrieve all results for a larger set - iterate over offsets, respecting the rate limit of 5/s
 
 ## Out-of scope
@@ -61,7 +61,7 @@ by adding `airtable` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:airtable, "~> 0.3.1"}
+    {:airtable, "~> 0.4.0"}
   ]
 end
 ```
