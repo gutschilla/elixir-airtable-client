@@ -1,5 +1,7 @@
 # Airtable
 
+[![CircleCI](https://circleci.com/gh/gutschilla/elixir-airtable-client.svg?style=svg)](https://circleci.com/gh/gutschilla/elixir-airtable-client)
+
 ## Planned Features and open questions
 
 - replicate API features with basic REST features:
