@@ -24,8 +24,6 @@
 These things will be done in a different project as this module with concentrate
 on the basic REST features themselves.
 
-[![buddy pipeline](https://app.buddy.works/zwoelf/elixir-airtable-client/pipelines/pipeline/199738/badge.svg?token=fb70ba265872a7640649f628ae57a3dae87c2cb21b49f078558379a232e50968 "buddy pipeline")](https://app.buddy.works/zwoelf/elixir-airtable-client/pipelines/pipeline/199738)
-
 # Intention
 
 Base your own API wrapper by calling this application with specific API keys,
