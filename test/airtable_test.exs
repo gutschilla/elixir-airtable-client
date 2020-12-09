@@ -30,9 +30,19 @@ defmodule AirtableTest do
     assert is_binary(id)
   end
 
-  test "query format for fields" do
-    request = Airtable.make_request(:list, "API_KEY", "base", "table", fields: ["Titel", "Teaser"])
-    assert request.url |> URI.parse() |> Map.get(:query) == "fields%5B%5D=Titel&fields%5B%5D=Teaser"
+  test "query format for empty opts" do
+    request = Airtable.make_request(:list, "API_KEY", "base", "table", [])
+    assert request.url |> URI.parse() |> Map.get(:query) == ""
+  end
+
+  test "query format for opts as string arrays" do
+    request = Airtable.make_request(:list, "API_KEY", "base", "table", fields: ["Titel", "Teaser"], offset: "etr0yEDIvDEQQAX6g/recOiZ470Eq1jtI7p")
+    assert request.url |> URI.parse() |> Map.get(:query) == "fields%5B%5D=Titel&fields%5B%5D=Teaser&offset=etr0yEDIvDEQQAX6g%2FrecOiZ470Eq1jtI7p"
+  end
+
+  test "query format for opts with camelized names" do
+    request = Airtable.make_request(:list, "API_KEY", "base", "table", offset: "etr0yEDIvDEQQAX6g/recOiZ470Eq1jtI7p", max_records: 200)
+    assert request.url |> URI.parse() |> Map.get(:query) == "offset=etr0yEDIvDEQQAX6g%2FrecOiZ470Eq1jtI7p&maxRecords=200"
   end
 
 end
