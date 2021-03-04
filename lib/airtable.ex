@@ -158,12 +158,12 @@ defmodule Airtable do
   end
 
   def make_request(:list, api_key, table_key, table_name, options) do
-    query = URI.encode_query(query_for_fields(options[:fields]))
     url =
       make_url(table_key, table_name)
       |> URI.parse()
-      |> Map.put(:query, query)
+      |> Map.put(:query, opts_to_query(options))
       |> URI.to_string()
+
     %Mojito.Request{
       headers: make_headers(api_key),
       method: :get,
@@ -180,12 +180,22 @@ defmodule Airtable do
   defp method_for(:replace), do: :put
   defp method_for(:update),  do: :patch
 
-  defp query_for_fields(field_list) when is_list(field_list) do
-    field_list |> Enum.map(fn value -> {"fields[]", value} end)
+  defp opts_to_query(options) when options == [], do: ""
+  defp opts_to_query(options) do
+    options
+    |> Enum.map(&encode_query_param/1)
+    |> Enum.intersperse("&")
+    |> Enum.join()
   end
 
-  defp query_for_fields(nil) do
-    []
+  defp encode_query_param({k, v}) when is_list(v) do
+    v
+    |> Enum.map(fn value -> {"#{Airtable.Camelizer.from_atom(k)}[]", value} end)
+    |> URI.encode_query()
+  end
+  defp encode_query_param({k, v}) do
+    [{Airtable.Camelizer.from_atom(k), v}]
+    |> URI.encode_query()
   end
 
   defp make_headers(api_key) when is_binary(api_key) do
